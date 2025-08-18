@@ -1,0 +1,79 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["views"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:../db_data/data.db"
+}
+
+// ==================== APP SETTING DB =========================================
+model ApiLogs {
+    id        String    @id @unique @default(uuid())
+    createdAt DateTime? @default(now())
+    userId    String?
+    method    String?
+    url       String?
+    ipAddress String?
+    status    String?
+    input     String?
+    output    String?
+}
+
+// ==================== USER MANAGEMENT =========================================
+
+model User {
+    id        String   @id @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    whatsappPhone String?
+    whatsappId    String?
+    firstName     String?
+    lastName      String?
+    name          String?
+    phone         String?
+    email         String?
+    password      String?
+    token         String?
+
+    code String?
+
+    userType String? @default("USER")
+    role     String?
+    status   String? @default("ACTIVE")
+}
+
+model adminSession {
+    id        String   @id @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    apiKey    String?
+    apiSecret String?
+    token     String?
+}
+
+model ApiResponse {
+    id           String   @id @unique @default(uuid())
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    apiName      String?
+    apiUrl       String?
+    apiMethod    String?
+    type         String?
+    description  String?
+    requestData  String?
+    responseData String?
+}
+
+model UserSession {
+    id            String   @id @unique @default(uuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    whatsappPhone String
+    step          String?
+    userFlow      String?
+    language      String?
+    data          String? // JSON data
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ACCOUNT_HOLDER_NAME}}'s Transaction Summary</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div style="display: flex;justify-content: space-between;align-items: center;">
+            <div>
+                <h1><span style="color: #2494C9;">{{ACCOUNT_HOLDER_NAME}}'s</span> Transaction <br /> Summary</h1>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <h2>Transaction History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="font-weight: 400;">SN</th>
+                        <th style="font-weight: 400;">Date</th>
+                        <th style="font-weight: 400;">Type</th>
+                        <th style="font-weight: 400;">Status</th>
+                        <th style="font-weight: 400;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{TRANSACTION_HISTORY_ROWS}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <div style="font-size: 18px;color: black;">⚠️ Trading Involves Risk</div>
+            <img class="logo" src="images/header-logo.png" alt="Logo" />
+        </div>
+    </div>
+</body>
+
+</html>
