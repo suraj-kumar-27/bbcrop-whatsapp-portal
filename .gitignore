@@ -1,0 +1,9 @@
+node_modules/
+docs/
+uploads/
+package-lock.json
+config.json
+prisma/generated/
+db_data/data.db
+config/
+.env

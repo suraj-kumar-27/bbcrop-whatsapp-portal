@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>API Logs Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="main-loader">
+    <div class="loader-spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon"><i class="fas fa-database"></i></span>
+          <span class="logo-text">API LOGGER</span>
+        </div>
+        <button id="sidebar-toggle" class="sidebar-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <div class="sidebar-menu">
+        <a href="abcd" class="active">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </a>
+        <!-- <a href="#">
+          <i class="fas fa-table"></i>
+          <span>Logs</span>
+        </a> -->
+        <a href="#" id="open-settings">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </a>
+
+      </div>
+      <div class="sidebar-footer">
+        <p>© 2025 API Logger</p>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <header>
+        <div class="header-left">
+          <button id="mobile-toggle" class="mobile-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1><i class="fas fa-clipboard-list"></i> API LOGS</h1>
+        </div>
+
+
+        <div class="header-actions">
+
+
+          <div class="export-container">
+            <button class="btn btn-export" onclick="exportDatabaseData()">
+              <i class="fas fa-file-excel"></i> Export Database
+            </button>
+            <button class="btn btn-export" onclick="exportSwaggerData()">
+              <i class="fas fa-file-code"></i> Export Swagger
+            </button>
+          </div>
+
+          <div class="date-display">
+            <i class="far fa-calendar-alt"></i>
+            <span id="current-date">2025-04-05</span>
+          </div>
+          <button id="open-filter-button" class="btn btn-filter">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+        </div>
+      </header>
+
+      <div class="stats-container">
+        <div class="stat-card success">
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="success-count">0</h3>
+            <p>Success</p>
+          </div>
+        </div>
+        <div class="stat-card error">
+          <div class="stat-icon">
+            <i class="fas fa-times-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="error-count">0</h3>
+            <p>Errors</p>
+          </div>
+        </div>
+        <div class="stat-card total">
+          <div class="stat-icon">
+            <i class="fas fa-list"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="total-count">0</h3>
+            <p>Total Logs</p>
+          </div>
+        </div>
+        <div class="stat-card avg">
+          <div class="stat-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3 id="today-count">0</h3>
+            <p>Today</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-container">
+        <div class="search-group">
+          <label for="method-input">Method</label>
+          <div class="input-with-icon">
+            <input type="text" id="method-input" placeholder="GET, POST...">
+            <i class="fas fa-code"></i>
+          </div>
+        </div>
+        <div class="search-group">
+          <label for="url-input">URL</label>
+          <div class="input-with-icon">
+            <input type="text" id="url-input" placeholder="Search by URL">
+            <i class="fas fa-link"></i>
+          </div>
+        </div>
+        <div class="search-group">
+          <label for="userId-input">User ID</label>
+          <div class="input-with-icon">
+            <input type="text" id="userId-input" placeholder="User ID">
+            <i class="fas fa-user"></i>
+          </div>
+        </div>
+        <div class="search-group">
+          <label for="ipAddress-input">IP Address</label>
+          <div class="input-with-icon">
+            <input type="text" id="ipAddress-input" placeholder="IP Address">
+            <i class="fas fa-network-wired"></i>
+          </div>
+        </div>
+        <div class="search-group">
+          <label for="status-input">Status</label>
+          <div class="select-wrapper">
+            <select id="status-input">
+              <option value="">All Statuses</option>
+              <option value="success">Success</option>
+              <option value="error">Error</option>
+            </select>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div id="table-loader" class="table-loader">
+          <div class="loader-spinner"></div>
+          <p>Loading data...</p>
+        </div>
+
+        <div class="table-responsive">
+          <table id="data-table" class="data-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>URL</th>
+                <th>User ID</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="data-body">
+              <!-- Data will be populated here -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="export-pagination-container">
+          <div id="pagination-container" class="pagination">
+            <!-- Pagination buttons will be dynamically populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-dialog">
+      <div class="modal-content" id="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i class="fas fa-info-circle"></i>
+            <h3>Log Details</h3>
+          </div>
+          <span class="close-button" id="close-modal-button">
+            <i class="fas fa-times"></i>
+          </span>
+        </div>
+        <!-- Content will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div class="modal-overlay" id="modal-filter">
+    <div class="modal-dialog filter-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i class="fas fa-calendar-alt"></i>
+            <h3>Date Filter</h3>
+          </div>
+          <span class="close-button" id="close-filter-button">
+            <i class="fas fa-times"></i>
+          </span>
+        </div>
+        <div class="modal-body" id="modal-content-filter">
+          <div class="form-group">
+            <label for="startdate-input">Start Date</label>
+            <div class="input-with-icon">
+              <input type="date" id="startdate-input" class="form-control">
+              <i class="fas fa-calendar"></i>
+            </div>
+          </div>
+          <div class="date-separator">to</div>
+          <div class="form-group">
+            <label for="enddate-input">End Date</label>
+            <div class="input-with-icon">
+              <input type="date" id="enddate-input" class="form-control">
+              <i class="fas fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closefilterModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="applyDateFilter()">Apply Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="modal-update">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i class="fas fa-cog"></i>
+            <h3>Settings</h3>
+          </div>
+          <span class="close-button" id="settings-icon">
+            <i class="fas fa-times"></i>
+          </span>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="crone-input">Is Crone Active</label>
+            <div class="toggle-switch">
+              <select id="crone-input" class="toggle-select">
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+              </select>
+              <div class="toggle-switch-visual"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="logs-input">API Logs</label>
+            <div class="toggle-switch">
+              <select id="logs-input" class="toggle-select">
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+              </select>
+              <div class="toggle-switch-visual"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="output-input">Input/Output Logging</label>
+            <div class="toggle-switch">
+              <select id="output-input" class="toggle-select">
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+              </select>
+              <div class="toggle-switch-visual"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="delete-input">Auto-Delete Logs Weekly</label>
+            <div class="toggle-switch">
+              <select id="delete-input" class="toggle-select">
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+              </select>
+              <div class="toggle-switch-visual"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="submitForm()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./index.js"></script>
+  <script src="./prettycustomelement.js"></script>
+</body>
+
+</html>
