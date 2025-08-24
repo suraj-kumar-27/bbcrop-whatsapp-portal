@@ -1,4 +1,5 @@
-import userServices from './user';
+import whatsappUserServices from './whatsappUser';
+import crmApiLogsServices from './crmApiLogs';
 import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
@@ -7,18 +8,39 @@ import FormData from 'form-data';
 const baseUrl = 'https://crm-api.bbcorp.trade';
 
 const crmApiServices = {
+    // Helper function to log CRM API calls
+    async logApiCall(type, endpoint, method, requestData, responseData, status, statusCode, whatsappPhone, email, userAgent, ipAddress, startTime) {
+        try {
+            const responseTime = startTime ? Date.now() - startTime : null;
+            await crmApiLogsServices.createCrmApiLog({
+                endpoint,
+                method,
+                type,
+                requestData: requestData ? JSON.stringify(requestData) : null,
+                responseData: responseData ? JSON.stringify(responseData) : null,
+                status,
+                statusCode,
+                whatsappPhone,
+                email,
+                userAgent,
+                ipAddress,
+                responseTime,
+                errorMessage: status === 'error' ? responseData?.message || 'Unknown error' : null
+            });
+        } catch (error) {
+            console.error('Error logging CRM API call:', error);
+        }
+    },
     async signup(whatsappPhone, { name, email, password, phoneNumber, referralCode }) {
         console.log('CRM API Signup:', { whatsappPhone, name, email, password, phoneNumber });
+        const startTime = Date.now();
+        const endpoint = `/api/client/auth/signup/partner/${referralCode}`;
+        const requestData = { email, name, password, phoneNumber };
+
         try {
             const res = await axios.post(
-                `${baseUrl}/api/client/auth/signup/partner/${referralCode}`,
-                {
-                    email,
-                    name,
-                    password,
-                    phoneNumber,
-                    // postalCode: '91',
-                },
+                `${baseUrl}${endpoint}`,
+                requestData,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -26,9 +48,26 @@ const crmApiServices = {
                     },
                 }
             );
-            const checkUser = await userServices.find({ whatsappPhone: whatsappPhone });
+
+            // Log successful API call
+            await this.logApiCall(
+                'createAccount',
+                endpoint,
+                'POST',
+                requestData,
+                res.data,
+                'success',
+                res.status,
+                whatsappPhone,
+                email,
+                null,
+                null,
+                startTime
+            );
+
+            const checkUser = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
             if (checkUser) {
-                await userServices.update(
+                await whatsappUserServices.update(
                     { id: checkUser.id },
                     {
                         whatsappPhone: whatsappPhone,
@@ -41,7 +80,7 @@ const crmApiServices = {
                     }
                 );
             } else {
-                await userServices.create({
+                await whatsappUserServices.create({
                     whatsappPhone: whatsappPhone,
                     phone: phoneNumber,
                     firstName: name.split(' ')[0],
@@ -54,6 +93,22 @@ const crmApiServices = {
             return res.data.msg || '✅ Signup successful! Check email.';
         } catch (e) {
             console.error('Error during signup:', e?.response?.data);
+
+            // Log failed API call
+            await this.logApiCall(
+                'createAccount',
+                endpoint,
+                'POST',
+                requestData,
+                e?.response?.data || { error: e.message },
+                'error',
+                e?.response?.status || 500,
+                whatsappPhone,
+                email,
+                null,
+                null,
+                startTime
+            );
             if (e?.response?.data?.msg) {
                 if (e?.response?.data?.msg.includes('already exists')) {
                     throw new Error('❌ Signup failed: Email already exists');
@@ -75,7 +130,7 @@ const crmApiServices = {
 
             // console.log('Login response:', JSON.stringify(res.data, null, 2));
             if (res.data.token) {
-                const checkUser = await userServices.find({ whatsappPhone: whatsappPhone });
+                const checkUser = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
 
                 let userObj = {
                     whatsappPhone,
@@ -90,9 +145,9 @@ const crmApiServices = {
                 }
 
                 if (!checkUser) {
-                    await userServices.create(userObj);
+                    await whatsappUserServices.create(userObj);
                 } else {
-                    await userServices.update(
+                    await whatsappUserServices.update(
                         { id: checkUser.id },
                         userObj
                     );
@@ -422,11 +477,11 @@ export default crmApiServices;
 
 async function getToken(whatsappPhone) {
     try {
-        const user = await userServices.find({ whatsappPhone: whatsappPhone });
+        const user = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
         if (user) {
             const loginResponse = await crmApiServices.login(whatsappPhone, user.email, user.password);
             if (loginResponse.token) {
-                await userServices.update(
+                await whatsappUserServices.update(
                     { id: user.id },
                     { token: loginResponse.token }
                 );

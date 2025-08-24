@@ -3,14 +3,14 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const userServices = {
+const whatsappUserServices = {
 
     create: async (insertObj) => {
-        return await prisma.user.create({ data: insertObj });
+        return await prisma.whatsappUser.create({ data: insertObj });
     },
 
     find: async (query) => {
-        return await prisma.user.findFirst({ where: query });
+        return await prisma.whatsappUser.findFirst({ where: query });
     },
 
     findSelected: async (query, selectFields) => {
@@ -18,27 +18,27 @@ const userServices = {
             acc[field] = true;
             return acc;
         }, {});
-        return await prisma.user.findFirst({ where: query, select: select });
+        return await prisma.whatsappUser.findFirst({ where: query, select: select });
     },
 
     update: async (query, update) => {
-        return await prisma.user.update({ where: query, data: update });
+        return await prisma.whatsappUser.update({ where: query, data: update });
     },
 
     updateMany: async (query, update) => {
-        return await prisma.user.updateMany({ where: query, data: update });
+        return await prisma.whatsappUser.updateMany({ where: query, data: update });
     },
 
     delete: async (query) => {
-        return await prisma.user.delete({ where: query });
+        return await prisma.whatsappUser.delete({ where: query });
     },
 
     deleteMany: async (query) => {
-        return await prisma.user.deleteMany({ where: query });
+        return await prisma.whatsappUser.deleteMany({ where: query });
     },
 
     list: async (query) => {
-        return await prisma.user.findMany({ where: query });
+        return await prisma.whatsappUser.findMany({ where: query });
     },
 
 
@@ -47,7 +47,7 @@ const userServices = {
             acc[field] = true;
             return acc;
         }, {});
-        return await prisma.user.findMany({ where: query, select: select });
+        return await prisma.whatsappUser.findMany({ where: query, select: select });
     },
 
     paginateList: async (validatedBody) => {
@@ -91,9 +91,9 @@ const userServices = {
             const parsedLimit = Math.max(parseInt(limit), 1) || 100;
             const parsedPage = Math.max(parseInt(page), 1) || 1;
 
-            const totalCount = await prisma.user.count({ where: query });
+            const totalCount = await prisma.whatsappUser.count({ where: query });
 
-            const result = await prisma.user.findMany({
+            const result = await prisma.whatsappUser.findMany({
                 where: query,
                 take: parsedLimit,
                 skip: (parsedPage - 1) * parsedLimit,
@@ -116,6 +116,6 @@ const userServices = {
 };
 
 
-export default userServices;
+export default whatsappUserServices;
 
 

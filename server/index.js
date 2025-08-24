@@ -6,9 +6,9 @@ dotenv.config();
 
 const swaggerDefinition = {
     info: {
-        title: "Uhurumed API",
+        title: "Whatsapp Portal API",
         version: "3.0",
-        description: "Uhurumed Apis Documentation"
+        description: "Whatsapp Portal Apis Documentation"
     },
     basePath: "/api/v1",
     securityDefinitions: {

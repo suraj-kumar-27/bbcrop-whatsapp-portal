@@ -21,9 +21,127 @@ model ApiLogs {
     output    String?
 }
 
+model CrmApiLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    type          String? // deposit, withdrawal, transfer, transaction, createAccount
+    requestData   String?
+    responseData  String?
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+}
+
+model DepositLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    apiKey        String?
+    apiPayload    String? // Store complete request payload
+    apiResponse   String? // Store complete API response
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+
+    @@map("deposit_logs")
+}
+
+model WithdrawalLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    apiKey        String?
+    apiPayload    String? // Store complete request payload
+    apiResponse   String? // Store complete API response
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+
+    @@map("withdrawal_logs")
+}
+
+model TransferLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    apiKey        String?
+    apiPayload    String? // Store complete request payload
+    apiResponse   String? // Store complete API response
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+
+    @@map("transfer_logs")
+}
+
+model TransactionLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    apiKey        String?
+    apiPayload    String? // Store complete request payload
+    apiResponse   String? // Store complete API response
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+
+    @@map("transaction_logs")
+}
+
+model CreateAccountLogs {
+    id            String    @id @unique @default(uuid())
+    createdAt     DateTime? @default(now())
+    whatsappPhone String?
+    email         String?
+    endpoint      String?
+    method        String?
+    apiKey        String?
+    apiPayload    String? // Store complete request payload
+    apiResponse   String? // Store complete API response
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
+    userAgent     String?
+    ipAddress     String?
+
+    @@map("create_account_logs")
+}
+
 // ==================== USER MANAGEMENT =========================================
 
-model User {
+model WhatsappUser {
     id        String   @id @unique @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -43,6 +161,33 @@ model User {
     userType String? @default("USER")
     role     String?
     status   String? @default("ACTIVE")
+}
+
+model User {
+    id        String   @id @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    password  String?
+    firstName String?
+    lastName  String?
+    role      String?
+
+    phone              String? @unique
+    countryCode        String?
+    phoneOtp           String?
+    PhoneOtpExpiryTime String?
+    isPhoneVerified    String? @default("false")
+
+    email              String? @unique
+    emailOtp           String?
+    emailOtpExpiryTime String?
+    isEmailVerified    String? @default("false")
+
+    status   String? @default("ACTIVE")
+    userType String? @default("USER")
+
+    deviceToken String?
 }
 
 model adminSession {

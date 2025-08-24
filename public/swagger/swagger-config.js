@@ -12,7 +12,7 @@ window.fetch = function (url, options) {
 
     return originalFetch(url, options)
         .then(response => {
-            if (url.endsWith('/api/v1/user/login')) {
+            if (url.endsWith('/api/v1/auth/login')) {
                 return response.clone().json().then(data => {
                     if (data.error === "true") {
                         console.error("API Error:", data.message || "Unknown error");

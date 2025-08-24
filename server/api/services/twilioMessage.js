@@ -1,4 +1,4 @@
-import userServices from './user';
+import whatsappUserServices from './whatsappUser';
 import { smartTranslate } from './language';
 import { PrismaClient } from '@prisma/client';
 import { convertHtmlToImage } from '../../helper/htmlToImage';
@@ -68,7 +68,7 @@ const twilioMessageServices = {
 
     mainListTempMessage: async (phoneNumber) => {
         try {
-            const user = await userServices.find({ whatsappPhone: phoneNumber });
+            const user = await whatsappUserServices.find({ whatsappPhone: phoneNumber });
 
             const language = await getUserLanguage(phoneNumber);
             if (language && language === 'arabic') {
@@ -85,7 +85,7 @@ const twilioMessageServices = {
 
     kycProcessStartTempMessage: async (phoneNumber, status = "incomplete ") => {
         try {
-            const user = await userServices.find({ whatsappPhone: phoneNumber });
+            const user = await whatsappUserServices.find({ whatsappPhone: phoneNumber });
             let statusMessage = status === "rejected" ? "we need to update some information" : "let's complete your verification";
 
             const language = await getUserLanguage(phoneNumber);

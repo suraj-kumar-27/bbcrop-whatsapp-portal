@@ -78,17 +78,6 @@ export default {
             return next(error)
         }
     },
-    isDoctor: async (req, res, next) => {
-        try {
-            let userData = req.userData;
-            if (userData.userType === 'DOCTOR') {
-                return next()
-            }
-            throw apiError.badRequest(responseMessage.NOT_AUTHORISED)
-        } catch (error) {
-            return next(error)
-        }
-    },
 
     checkRole: (role) => {
         return async (req, res, next) => {
