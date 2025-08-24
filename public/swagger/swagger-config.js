@@ -10,6 +10,7 @@ window.fetch = function (url, options) {
         };
     }
 
+
     return originalFetch(url, options)
         .then(response => {
             if (url.endsWith('/api/v1/auth/login')) {
