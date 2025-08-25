@@ -6,11 +6,24 @@ const prisma = new PrismaClient();
 const userServices = {
 
     create: async (insertObj) => {
-        return await prisma.user.create({ data: insertObj });
+
+        if (insertObj.role && insertObj.role.length > 0) {
+            insertObj.role = JSON.stringify([...new Set(insertObj.role)] || []);
+        }
+
+        const result = await prisma.user.create({ data: insertObj });
+        if (result && result.role) {
+            result.role = JSON.parse(result.role || '[]');
+        }
+        return result;
     },
 
     find: async (query) => {
-        return await prisma.user.findFirst({ where: query });
+        const result = await prisma.user.findFirst({ where: query });
+        if (result && result.role) {
+            result.role = JSON.parse(result.role || '[]');
+        }
+        return result;
     },
 
     findSelected: async (query, selectFields) => {
@@ -18,14 +31,28 @@ const userServices = {
             acc[field] = true;
             return acc;
         }, {});
-        return await prisma.user.findFirst({ where: query, select: select });
+        const result = await prisma.user.findFirst({ where: query, select: select });
+        if (result && result.role) {
+            result.role = JSON.parse(result.role || '[]');
+        }
+        return result;
     },
 
     update: async (query, update) => {
-        return await prisma.user.update({ where: query, data: update });
+        if (update.role && update.role.length > 0) {
+            update.role = JSON.stringify([...new Set(update.role)] || []);
+        }
+        const result = await prisma.user.update({ where: query, data: update });
+        if (result && result.role) {
+            result.role = JSON.parse(result.role || '[]');
+        }
+        return result;
     },
 
     updateMany: async (query, update) => {
+        if (update.role && update.role.length > 0) {
+            update.role = JSON.stringify([...new Set(update.role)] || []);
+        }
         return await prisma.user.updateMany({ where: query, data: update });
     },
 
@@ -38,7 +65,13 @@ const userServices = {
     },
 
     list: async (query) => {
-        return await prisma.user.findMany({ where: query });
+        const result = await prisma.user.findMany({ where: query });
+        return result.map(user => {
+            if (user.role) {
+                user.role = JSON.parse(user.role || '[]');
+            }
+            return user;
+        });
     },
 
 
@@ -47,7 +80,13 @@ const userServices = {
             acc[field] = true;
             return acc;
         }, {});
-        return await prisma.user.findMany({ where: query, select: select });
+        const result = await prisma.user.findMany({ where: query, select: select });
+        return result.map(user => {
+            if (user.role) {
+                user.role = JSON.parse(user.role || '[]');
+            }
+            return user;
+        });
     },
 
     paginateList: async (validatedBody) => {
@@ -99,9 +138,18 @@ const userServices = {
                 skip: (parsedPage - 1) * parsedLimit,
                 orderBy: { createdAt: 'desc' },
             });
+
+            // Parse role field for each user
+            const parsedResult = result.map(user => {
+                if (user.role) {
+                    user.role = JSON.parse(user.role || '[]');
+                }
+                return user;
+            });
+
             const totalPages = Math.ceil(totalCount / parsedLimit);
             return {
-                docs: result,
+                docs: parsedResult,
                 page: parsedPage,
                 limit: parsedLimit,
                 total: totalCount,

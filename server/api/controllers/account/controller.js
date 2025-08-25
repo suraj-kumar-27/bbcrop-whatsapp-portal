@@ -8,11 +8,11 @@ export class Controller {
 
     /**
      * @swagger
-     * /withdrawal/list:
+     * /account/list:
      *   get:
-     *     tags: ["WITHDRAWAL LOGS"]
-     *     summary: List Withdrawal Logs
-     *     description: Retrieve a list of withdrawal API logs with optional filtering.
+     *     tags: ["ACCOUNT LOGS"]
+     *     summary: List Account Logs
+     *     description: Retrieve a list of account API logs with optional filtering.
      *     produces: [ application/json]
      *     parameters:
      *       - name: search
@@ -43,7 +43,7 @@ export class Controller {
 
         try {
             const validatedBody = await validationSchema.validateAsync(req.query);
-            validatedBody.type = 'withdrawal';
+            validatedBody.type = 'create_account';
 
             const result = await crmApiLogsServices.paginateList(validatedBody);
             if (result.docs.length == 0) {
@@ -58,11 +58,11 @@ export class Controller {
 
     /**
      * @swagger
-     * /withdrawal/view:
+     * /account/view:
      *   get:
-     *     tags: ["WITHDRAWAL LOGS"]
-     *     summary: View Withdrawal Log 
-     *     description: View details of a specific withdrawal log. 
+     *     tags: ["ACCOUNT LOGS"]
+     *     summary: View Account Log 
+     *     description: View details of a specific account log. 
      *     produces: ["application/json"]
      *     parameters:
      *       - name: id
@@ -80,7 +80,7 @@ export class Controller {
 
         try {
             const validatedBody = await validationSchema.validateAsync(req.query);
-            let result = await crmApiLogsServices.find({ id: validatedBody.id, type: 'withdrawal' });
+            let result = await crmApiLogsServices.find({ id: validatedBody.id, type: 'create_account' });
 
             if (!result) {
                 throw apiError.notFound(responseMessage.DATA_NOT_FOUND);

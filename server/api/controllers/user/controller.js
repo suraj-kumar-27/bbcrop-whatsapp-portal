@@ -42,6 +42,7 @@ export class Controller {
      *             countryCode: { type: "string", example: "+1" }
      *             password: { type: "string", example: "password123" }
      *             userType: { type: "string", enum: ["USER", "ADMIN", "SUPERADMIN"], example: "USER" }
+     *             role: { type: "array", example: ["userListAll", "userView"] }
      *     responses:
      *       200: { description: 'Operation completed successfully.', schema: { $ref: '#/definitions/successResponse' } }
      *       404: { description: 'No user found.', schema: { $ref: '#/definitions/errorResponse' } }
@@ -55,6 +56,7 @@ export class Controller {
             countryCode: Joi.string().required(),
             password: Joi.string().required(),
             userType: Joi.string().valid(...Object.values(userType)).required(),
+            role: Joi.array().items(Joi.string()).required(),
         });
 
         try {
@@ -125,6 +127,7 @@ export class Controller {
      *             countryCode: { type: "string", example: "+1" }
      *             password: { type: "string", example: "password123" }
      *             userType: { type: "string", enum: ["USER", "ADMIN", "SUPERADMIN"], example: "USER" }
+     *             role: { type: "array", example: ["userListAll", "userView"] }
      *     responses:
      *       200: { description: 'Operation completed successfully.', schema: { $ref: '#/definitions/successResponse' } }
      *       404: { description: 'No user found.', schema: { $ref: '#/definitions/errorResponse' } }
@@ -142,6 +145,7 @@ export class Controller {
             countryCode: Joi.string().optional(),
             password: Joi.string().optional(),
             userType: Joi.string().valid(...Object.values(userType)).optional(),
+            role: Joi.array().items(Joi.string()).optional(),
         });
 
         try {

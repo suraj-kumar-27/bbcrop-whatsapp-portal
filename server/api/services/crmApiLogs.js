@@ -1,44 +1,103 @@
 import { PrismaClient } from "@prisma/client";
-import { getSocket } from "../../helper/socketHandler";
-
 const prisma = new PrismaClient();
 
 const crmApiLogsServices = {
-    createCrmApiLog: async (insertObj) => {
+
+    create: async (insertObj) => {
+        if (insertObj.requestData) {
+            if (typeof insertObj.requestData !== 'string') {
+                insertObj.requestData = JSON.stringify(insertObj.requestData);
+            }
+        }
+        if (insertObj.responseData) {
+            if (typeof insertObj.responseData !== 'string') {
+                insertObj.responseData = JSON.stringify(insertObj.responseData);
+            }
+        }
         const data = await prisma.crmApiLogs.create({ data: insertObj });
-        const io = getSocket();
-        io.emit('crmLogsUpdate', data);
         return data;
     },
 
-    findCrmApiLog: async (query) => {
-        return await prisma.crmApiLogs.findFirst({ where: query });
+    find: async (query) => {
+        const result = await prisma.crmApiLogs.findFirst({ where: query });
+        if (result) {
+            if (result.requestData) {
+                try {
+                    result.requestData = JSON.parse(result.requestData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+            if (result.responseData) {
+                try {
+                    result.responseData = JSON.parse(result.responseData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+        }
+        return result;
     },
 
-    listCrmApiLogs: async (query) => {
-        return await prisma.crmApiLogs.findMany({ where: query });
+    list: async (query) => {
+        const result = await prisma.crmApiLogs.findMany({ where: query });
+        return result.map(item => {
+            if (item.requestData) {
+                try {
+                    item.requestData = JSON.parse(item.requestData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+            if (item.responseData) {
+                try {
+                    item.responseData = JSON.parse(item.responseData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+            return item;
+        });
     },
 
-    deleteCrmApiLogs: async (query) => {
+    delete: async (query) => {
         return await prisma.crmApiLogs.deleteMany({ where: query });
     },
 
-    paginateCrmApiLogList: async (validatedBody) => {
+    update: async (query, updateData) => {
+        if (updateData.requestData) {
+            if (typeof updateData.requestData !== 'string') {
+                updateData.requestData = JSON.stringify(updateData.requestData);
+            }
+        }
+        if (updateData.responseData) {
+            if (typeof updateData.responseData !== 'string') {
+                updateData.responseData = JSON.stringify(updateData.responseData);
+            }
+        }
+        const result = await prisma.crmApiLogs.update({ where: query, data: updateData });
+        if (result) {
+            if (result.requestData) {
+                try {
+                    result.requestData = JSON.parse(result.requestData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+            if (result.responseData) {
+                try {
+                    result.responseData = JSON.parse(result.responseData);
+                } catch (e) {
+                    // Keep as string if parsing fails
+                }
+            }
+        }
+        return result;
+    },
+
+    paginateListOld: async (validatedBody) => {
         try {
-            const {
-                search,
-                whatsappPhone,
-                email,
-                endpoint,
-                method,
-                type,
-                status,
-                statusCode,
-                page,
-                limit,
-                startDate,
-                endDate
-            } = validatedBody;
+            const { search, whatsappPhone, email, endpoint, method, type, status, statusCode, page, limit, startDate, endDate } = validatedBody;
 
             let query = {};
 
@@ -46,7 +105,6 @@ const crmApiLogsServices = {
                 query.OR = [
                     { whatsappPhone: { contains: search } },
                     { email: { contains: search } },
-                    { endpoint: { contains: search } },
                     { method: { contains: search } },
                     { type: { contains: search } },
                     { status: { contains: search } },
@@ -162,6 +220,95 @@ const crmApiLogsServices = {
                     types: typeStats
                 },
                 docs: crmApiLogs,
+                page: parsedPage,
+                limit: parsedLimit,
+                total: totalCount,
+                totalPages: totalPages,
+            };
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    paginateList: async (validatedBody) => {
+        try {
+            const { search, type, whatsappPhone, email, status, statusCode, page, limit, fromDate, toDate } = validatedBody;
+
+            let query = {};
+
+            if (search) {
+                query.OR = [
+                    { whatsappPhone: { contains: search } },
+                    { email: { contains: search } },
+                    { phone: { contains: search } },
+                    { status: { contains: search } },
+                    { name: { contains: search } },
+                    { errorMessage: { contains: search } }
+                ];
+            }
+
+            if (type) {
+                query.type = type;
+            }
+
+            if (whatsappPhone) {
+                query.whatsappPhone = { contains: whatsappPhone };
+            }
+            if (email) {
+                query.email = { contains: email };
+            }
+            if (status) {
+                query.status = { contains: status };
+            }
+            if (statusCode) {
+                query.statusCode = parseInt(statusCode);
+            }
+
+            if (fromDate && toDate) {
+                query.createdAt = {
+                    gte: new Date(`${fromDate}T00:00:00.000Z`),
+                    lte: new Date(`${toDate}T23:59:59.999Z`)
+                };
+            } else if (fromDate) {
+                query.createdAt = { gte: new Date(`${fromDate}T00:00:00.000Z`) };
+            } else if (toDate) {
+                query.createdAt = { lte: new Date(`${toDate}T23:59:59.999Z`) };
+            }
+
+            const parsedLimit = Math.max(parseInt(limit), 1) || 100;
+            const parsedPage = Math.max(parseInt(page), 1) || 1;
+
+            const totalCount = await prisma.crmApiLogs.count({ where: query });
+            const result = await prisma.crmApiLogs.findMany({
+                where: query,
+                take: parsedLimit,
+                skip: (parsedPage - 1) * parsedLimit,
+                orderBy: { createdAt: 'desc' }
+            });
+
+            // Parse JSON fields for each item
+            const parsedResult = result.map(item => {
+                if (item.requestData) {
+                    try {
+                        item.requestData = JSON.parse(item.requestData);
+                    } catch (e) {
+                        // Keep as string if parsing fails
+                    }
+                }
+                if (item.responseData) {
+                    try {
+                        item.responseData = JSON.parse(item.responseData);
+                    } catch (e) {
+                        // Keep as string if parsing fails
+                    }
+                }
+                return item;
+            });
+
+            const totalPages = Math.ceil(totalCount / parsedLimit);
+
+            return {
+                docs: parsedResult,
                 page: parsedPage,
                 limit: parsedLimit,
                 total: totalCount,

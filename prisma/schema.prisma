@@ -1,6 +1,5 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["views"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -21,103 +20,7 @@ model ApiLogs {
     output    String?
 }
 
-model DepositLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    apiKey        String?
-    apiPayload    String? // Store complete request payload
-    apiResponse   String? // Store complete API response
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-
-}
-
-model WithdrawalLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    apiKey        String?
-    apiPayload    String? // Store complete request payload
-    apiResponse   String? // Store complete API response
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-
-}
-
-model TransferLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    apiKey        String?
-    apiPayload    String? // Store complete request payload
-    apiResponse   String? // Store complete API response
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-
-}
-
-model TransactionLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    apiKey        String?
-    apiPayload    String? // Store complete request payload
-    apiResponse   String? // Store complete API response
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-
-}
-
-model CreateAccountLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    apiKey        String?
-    apiPayload    String? // Store complete request payload
-    apiResponse   String? // Store complete API response
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-
-}
-
 // ==================== USER MANAGEMENT =========================================
-
 model WhatsappUser {
     id        String   @id @unique @default(uuid())
     createdAt DateTime @default(now())
@@ -176,19 +79,6 @@ model adminSession {
     token     String?
 }
 
-model ApiResponse {
-    id           String   @id @unique @default(uuid())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    apiName      String?
-    apiUrl       String?
-    apiMethod    String?
-    type         String?
-    description  String?
-    requestData  String?
-    responseData String?
-}
-
 model UserSession {
     id            String   @id @unique @default(uuid())
     createdAt     DateTime @default(now())
@@ -198,4 +88,23 @@ model UserSession {
     userFlow      String?
     language      String?
     data          String? // JSON data
+}
+
+model CrmApiLogs {
+    id            String   @id @unique @default(uuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    whatsappPhone String?
+    name          String?
+    phone         String?
+    email         String?
+    url           String?
+    method        String?
+    type          String?
+    requestData   String?
+    responseData  String?
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
 }

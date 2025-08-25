@@ -53,35 +53,35 @@ export class userController {
         }
     }
 
-    /**
-     * @swagger
-     * /auth/signup:
-     *   post:
-     *     summary: User sign up
-     *     description: User sign up
-     *     tags: ["AUTH"]
-     *     produces: ["application/json"]
-     *     parameters:
-     *       - name: requestBody
-     *         description: User creation data
-     *         in: body
-     *         required: true
-     *         schema:
-     *           type: object
-     *           properties:
-     *             email: { type: "string", example: "abc@mailinator.com" }
-     *             phone: { type: "string", example: "8340434977" }
-     *             countryCode: { type: "string", example: "+91" }
-     *             countryNameCode: { type: "string", example: "IN" }
-     *             firstName: { type: "string", example: "Suraj" }
-     *             lastName: { type: "string", example: "Kumar" }
-     *             password: { type: "string", example: "123456" }
-     *             confirmPassword: { type: "string", example: "123456" }
-     *             referralCode: { type: "string", example: "" }
-     *     responses:
-     *       200: { description: 'User created successfully.', schema: { $ref: '#/definitions/successResponse' } }
-     *       409: { description: 'Username already exists.', schema: { $ref: '#/definitions/errorResponse' } }
-     */
+    // /**
+    //  * @swagger
+    //  * /auth/signup:
+    //  *   post:
+    //  *     summary: User sign up
+    //  *     description: User sign up
+    //  *     tags: ["AUTH"]
+    //  *     produces: ["application/json"]
+    //  *     parameters:
+    //  *       - name: requestBody
+    //  *         description: User creation data
+    //  *         in: body
+    //  *         required: true
+    //  *         schema:
+    //  *           type: object
+    //  *           properties:
+    //  *             email: { type: "string", example: "abc@mailinator.com" }
+    //  *             phone: { type: "string", example: "8340434977" }
+    //  *             countryCode: { type: "string", example: "+91" }
+    //  *             countryNameCode: { type: "string", example: "IN" }
+    //  *             firstName: { type: "string", example: "Suraj" }
+    //  *             lastName: { type: "string", example: "Kumar" }
+    //  *             password: { type: "string", example: "123456" }
+    //  *             confirmPassword: { type: "string", example: "123456" }
+    //  *             referralCode: { type: "string", example: "" }
+    //  *     responses:
+    //  *       200: { description: 'User created successfully.', schema: { $ref: '#/definitions/successResponse' } }
+    //  *       409: { description: 'Username already exists.', schema: { $ref: '#/definitions/errorResponse' } }
+    //  */
     async signup(req, res, next) {
         const validationSchema = Joi.object({
             email: Joi.string().lowercase().required(),

@@ -6,7 +6,5 @@ import userRole from "../../../enums/userRole";
 export default Express.Router()
     .use(auth.verifyToken)
 
-    // ======================= TRANSFER LOGS MANAGEMENT =====================
-    .get('/list', auth.checkRole(userRole.transfer.list), controller.listTransferLogs)
-    .get('/view', auth.checkRole(userRole.transfer.view), controller.viewTransferLog)
-    .get('/stats', auth.checkRole(userRole.transfer.list), controller.getTransferLogsStats);
+    .get('/list', controller.list)
+    .get('/view', controller.view)
