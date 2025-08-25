@@ -21,24 +21,6 @@ model ApiLogs {
     output    String?
 }
 
-model CrmApiLogs {
-    id            String    @id @unique @default(uuid())
-    createdAt     DateTime? @default(now())
-    whatsappPhone String?
-    email         String?
-    endpoint      String?
-    method        String?
-    type          String? // deposit, withdrawal, transfer, transaction, createAccount
-    requestData   String?
-    responseData  String?
-    status        String?
-    statusCode    Int?
-    errorMessage  String?
-    responseTime  Int?
-    userAgent     String?
-    ipAddress     String?
-}
-
 model DepositLogs {
     id            String    @id @unique @default(uuid())
     createdAt     DateTime? @default(now())
@@ -56,7 +38,6 @@ model DepositLogs {
     userAgent     String?
     ipAddress     String?
 
-    @@map("deposit_logs")
 }
 
 model WithdrawalLogs {
@@ -76,7 +57,6 @@ model WithdrawalLogs {
     userAgent     String?
     ipAddress     String?
 
-    @@map("withdrawal_logs")
 }
 
 model TransferLogs {
@@ -96,7 +76,6 @@ model TransferLogs {
     userAgent     String?
     ipAddress     String?
 
-    @@map("transfer_logs")
 }
 
 model TransactionLogs {
@@ -116,7 +95,6 @@ model TransactionLogs {
     userAgent     String?
     ipAddress     String?
 
-    @@map("transaction_logs")
 }
 
 model CreateAccountLogs {
@@ -136,7 +114,6 @@ model CreateAccountLogs {
     userAgent     String?
     ipAddress     String?
 
-    @@map("create_account_logs")
 }
 
 // ==================== USER MANAGEMENT =========================================
