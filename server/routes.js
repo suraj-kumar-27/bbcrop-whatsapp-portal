@@ -8,6 +8,8 @@ import whatsapp from './api/controllers/whatsapp/routes';
 import auth from './api/controllers/auth/routes';
 import user from './api/controllers/user/routes';
 import role from './api/controllers/role/routes';
+import whatsappUser from './api/controllers/whatsappUser/routes';
+import dashboard from './api/controllers/dashboard/routes';
 
 
 
@@ -31,6 +33,8 @@ export default function routes(app) {
   app.use('/api/v1/transfer', transfer)
   app.use('/api/v1/account', account)
   app.use('/api/v1/whatsapp', whatsapp)
+  app.use('/api/v1/whatsappUser', whatsappUser)
+  app.use('/api/v1/dashboard', dashboard)
 
   return app;
 }
