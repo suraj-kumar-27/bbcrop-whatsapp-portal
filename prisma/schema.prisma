@@ -1,6 +1,5 @@
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["views"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
@@ -22,8 +21,7 @@ model ApiLogs {
 }
 
 // ==================== USER MANAGEMENT =========================================
-
-model User {
+model WhatsappUser {
     id        String   @id @unique @default(uuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -45,6 +43,33 @@ model User {
     status   String? @default("ACTIVE")
 }
 
+model User {
+    id        String   @id @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    password  String?
+    firstName String?
+    lastName  String?
+    role      String?
+
+    phone              String? @unique
+    countryCode        String?
+    phoneOtp           String?
+    PhoneOtpExpiryTime String?
+    isPhoneVerified    String? @default("false")
+
+    email              String? @unique
+    emailOtp           String?
+    emailOtpExpiryTime String?
+    isEmailVerified    String? @default("false")
+
+    status   String? @default("ACTIVE")
+    userType String? @default("USER")
+
+    deviceToken String?
+}
+
 model adminSession {
     id        String   @id @unique @default(uuid())
     createdAt DateTime @default(now())
@@ -52,19 +77,6 @@ model adminSession {
     apiKey    String?
     apiSecret String?
     token     String?
-}
-
-model ApiResponse {
-    id           String   @id @unique @default(uuid())
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    apiName      String?
-    apiUrl       String?
-    apiMethod    String?
-    type         String?
-    description  String?
-    requestData  String?
-    responseData String?
 }
 
 model UserSession {
@@ -76,4 +88,23 @@ model UserSession {
     userFlow      String?
     language      String?
     data          String? // JSON data
+}
+
+model CrmApiLogs {
+    id            String   @id @unique @default(uuid())
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    whatsappPhone String?
+    name          String?
+    phone         String?
+    email         String?
+    url           String?
+    method        String?
+    type          String?
+    requestData   String?
+    responseData  String?
+    status        String?
+    statusCode    Int?
+    errorMessage  String?
+    responseTime  Int?
 }

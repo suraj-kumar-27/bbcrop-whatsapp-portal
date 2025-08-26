@@ -4,7 +4,7 @@ import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 
 import apiError from '../../../helper/apiError';
-import userServices from "../../services/user";
+import whatsappUserServices from '../../services/whatsappUser';
 import crmApiServices from "../../services/crmApi";
 import twilioMessageServices from "../../services/twilioMessage";
 import { apiLogHandler } from "../../../helper/apiLogHandler";
@@ -110,7 +110,7 @@ export class userController {
 
                     // NOTE If user sends "hi" or similar, check if they are already logged in
                     try {
-                        const user = await userServices.find({ whatsappPhone: from });
+                        const user = await whatsappUserServices.find({ whatsappPhone: from });
 
                         if (user) {
                             try {
@@ -188,7 +188,7 @@ export class userController {
                     // NOTE Logout flow
                     session = { step: 'language-selection', data: {} };
                     await _saveSessionToDb(from, session);
-                    await userServices.deleteMany({ whatsappPhone: from });
+                    await whatsappUserServices.deleteMany({ whatsappPhone: from });
                     await twilioMessageServices.sendTextMessage(from, `You have been logged out. Type "Hi" to start again.`);
                     await twilioMessageServices.languageTempMessage(from);
                     return;
@@ -513,7 +513,7 @@ export class userController {
                         const realAccounts = await crmApiServices.getAccounts(from, 'real') || [];
                         const demoAccounts = await crmApiServices.getAccounts(from, 'demo') || [];
                         const wallet = await crmApiServices.getWallet(from)
-                        const user = await userServices.find({ whatsappPhone: from });
+                        const user = await whatsappUserServices.find({ whatsappPhone: from });
                         const userName = user?.firstName || "there";
 
                         // let accountsMessage = `🏦 Account Summary*\n\n`;
@@ -1261,7 +1261,7 @@ export class userController {
                                 const awaitingMessage = `📜 Your Transaction History is being prepared...`;
                                 await twilioMessageServices.sendTextMessage(from, awaitingMessage);
 
-                                const user = await userServices.find({ whatsappPhone: from });
+                                const user = await whatsappUserServices.find({ whatsappPhone: from });
                                 const userName = user?.firstName || "there";
 
                                 const imageData = {
@@ -1365,7 +1365,7 @@ export class userController {
                 }
 
                 else {
-                    const user = await userServices.find({ whatsappPhone: from });
+                    const user = await whatsappUserServices.find({ whatsappPhone: from });
                     if (user) {
                         const loginRes = await crmApiServices.login(from, user.email, user.password);
                         if (!loginRes.token) {
