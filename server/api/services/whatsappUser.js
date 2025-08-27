@@ -58,11 +58,11 @@ const whatsappUserServices = {
 
             if (search) {
                 query.OR = [
-                    { firstName: { contains: search } },
-                    { lastName: { contains: search } },
+                    { name: { contains: search } },
                     { status: { contains: search } },
                     { email: { contains: search } },
                     { phone: { contains: search } },
+                    { whatsappPhone: { contains: search } },
                 ];
             }
 
@@ -98,6 +98,17 @@ const whatsappUserServices = {
                 take: parsedLimit,
                 skip: (parsedPage - 1) * parsedLimit,
                 orderBy: { createdAt: 'desc' },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    whatsappPhone: true,
+                    code: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                }
             });
             const totalPages = Math.ceil(totalCount / parsedLimit);
             return {

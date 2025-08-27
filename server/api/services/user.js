@@ -94,6 +94,7 @@ const userServices = {
             const { search, userId, userType, status, fromDate, toDate, page, limit, } = validatedBody;
 
             let query = {};
+            query.userType = { not: 'ADMIN' };
 
             if (search) {
                 query.OR = [

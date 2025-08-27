@@ -25,7 +25,7 @@ export class Controller {
      * /user/create:
      *   post:
      *     summary: Create new user
-     *     description: Add a new user entry (USER, ADMIN, SUPERADMIN)
+     *     description: Add a new user entry (USER, SUPERADMIN)
      *     tags: ["USER_MANAGEMENT"]
      *     produces: ["application/json"]
      *     parameters:
@@ -41,7 +41,7 @@ export class Controller {
      *             phone: { type: "string", example: "1234567890" }
      *             countryCode: { type: "string", example: "+1" }
      *             password: { type: "string", example: "password123" }
-     *             userType: { type: "string", enum: ["USER", "ADMIN", "SUPERADMIN"], example: "USER" }
+     *             userType: { type: "string", enum: ["USER", "SUPERADMIN"], example: "USER" }
      *             role: { type: "array", example: ["userListAll", "userView"] }
      *     responses:
      *       200: { description: 'Operation completed successfully.', schema: { $ref: '#/definitions/successResponse' } }
@@ -55,7 +55,7 @@ export class Controller {
             phone: Joi.string().required(),
             countryCode: Joi.string().required(),
             password: Joi.string().required(),
-            userType: Joi.string().valid(...Object.values(userType)).required(),
+            userType: Joi.string().valid(...Object.values(userType).filter(type => type !== 'ADMIN')).required(),
             role: Joi.array().items(Joi.string()).required(),
         });
 
@@ -126,7 +126,7 @@ export class Controller {
      *             phone: { type: "string", example: "1234567890" }
      *             countryCode: { type: "string", example: "+1" }
      *             password: { type: "string", example: "password123" }
-     *             userType: { type: "string", enum: ["USER", "ADMIN", "SUPERADMIN"], example: "USER" }
+     *             userType: { type: "string", enum: ["USER", "SUPERADMIN"], example: "USER" }
      *             role: { type: "array", example: ["userListAll", "userView"] }
      *     responses:
      *       200: { description: 'Operation completed successfully.', schema: { $ref: '#/definitions/successResponse' } }
@@ -144,7 +144,7 @@ export class Controller {
             phone: Joi.string().optional(),
             countryCode: Joi.string().optional(),
             password: Joi.string().optional(),
-            userType: Joi.string().valid(...Object.values(userType)).optional(),
+            userType: Joi.string().valid(...Object.values(userType).filter(type => type !== 'ADMIN')).optional(),
             role: Joi.array().items(Joi.string()).optional(),
         });
 
@@ -155,6 +155,11 @@ export class Controller {
             const content = await userServices.find({ id: validatedQuery.id });
             if (!content) {
                 throw apiError.notFound('User not found.');
+            }
+
+            // Prevent updating ADMIN users
+            if (content.userType === 'ADMIN') {
+                throw apiError.forbidden('Cannot update ADMIN users.');
             }
 
             if (validatedBody.email) {
@@ -215,6 +220,11 @@ export class Controller {
                 throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
             }
 
+            // Prevent viewing ADMIN users
+            if (content.userType === 'ADMIN') {
+                throw apiError.forbidden('Cannot view ADMIN users.');
+            }
+
             await apiLogHandler(req, content);
             return res.json(new response(content, responseMessage.DATA_FOUND));
         } catch (error) {
@@ -254,6 +264,10 @@ export class Controller {
                 throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
             }
 
+            if (content.userType === 'ADMIN') {
+                throw apiError.forbidden('Cannot delete ADMIN users.');
+            }
+
             const result = await userServices.delete({ id: validatedQuery.id });
             await apiLogHandler(req, result);
             return res.json(new response(result, responseMessage.DELETE_SUCCESS));
@@ -271,15 +285,6 @@ export class Controller {
      *     tags: ["USER_MANAGEMENT"]
      *     produces: ["application/json"]
      *     parameters:
-     *       - name: userId
-     *         in: query
-     *       - name: status
-     *         in: query
-     *       - name: userType
-     *         in: query
-     *         description: Filter by user type (USER, ADMIN, SUPERADMIN)
-     *         type: string
-     *         enum: ["USER", "ADMIN", "SUPERADMIN"]
      *       - name: search
      *         in: query
      *       - name: fromDate
@@ -300,7 +305,7 @@ export class Controller {
             search: Joi.string().optional().allow(''),
             status: Joi.string().optional().allow(''),
             userId: Joi.string().optional().allow(''),
-            userType: Joi.string().valid(...Object.values(userType)).optional().allow(''),
+            userType: Joi.string().valid(...Object.values(userType).filter(type => type !== 'ADMIN')).optional().allow(''),
             fromDate: Joi.date().optional().allow(''),
             toDate: Joi.date().optional().allow(''),
             page: Joi.string().optional().allow(''),
