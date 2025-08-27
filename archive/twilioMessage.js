@@ -1,5 +1,6 @@
 import { skip } from '@prisma/client/runtime/library';
 import userServices from './user';
+import whatsappUserServices from './whatsappUser'
 import e from 'cors';
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -61,7 +62,7 @@ const twilioMessageServices = {
 
     mainListTempMessage: async (phoneNumber) => {
         try {
-            const user = await userServices.find({ whatsappPhone: phoneNumber });
+            const user = await whatsappUserServices.find({ whatsappPhone: phoneNumber });
 
             const message = await client.messages.create({
                 from: `whatsapp:${twilioNumber}`,
@@ -82,7 +83,7 @@ const twilioMessageServices = {
 
     kycProcessStartTempMessage: async (phoneNumber, status = "incomplete ") => {
         try {
-            const user = await userServices.find({ whatsappPhone: phoneNumber });
+            const user = await whatsappUserServices.find({ whatsappPhone: phoneNumber });
 
             const statusMessage = status === "rejected" ? "we need to update some information" : "let's complete your verification";
 

@@ -36,10 +36,10 @@ export class userController {
             console.log(`Received message from ${from}: ${msg}`);
             console.log(`buttonPayload: ${buttonPayload}`);
             console.log(`Media: ${numMedia > 0 ? mediaUrl : 'None'}`);
+            let session = await _getSessionFromDb(from);
 
             try {
 
-                let session = await _getSessionFromDb(from);
                 req.userId = from;
                 await apiLogHandler(req, { from, msg, mediaUrl, contentType, buttonPayload, numMedia, session });
 
@@ -600,7 +600,7 @@ export class userController {
                     session.data = session.data || {};
                     session.data.walletId = wallets[0]?._id || "";
 
-                    const paymentGateways = await crmApiServices.getPaymentGateway(from);
+                    const paymentGateways = await crmApiServices.getPaymentGateway(from, 'deposit', session.data.walletId);
                     if (!paymentGateways || paymentGateways.length === 0) {
                         await twilioMessageServices.goBackTempMessage(from, `❌ No payment gateways are available at the moment. Please try again later.`);
                         return;
@@ -933,7 +933,7 @@ export class userController {
                     session.data = session.data || {};
                     session.data.walletId = session.data.walletId || wallets[0]?._id || "";
 
-                    const paymentGateways = await crmApiServices.getPaymentGateway(from);
+                    const paymentGateways = await crmApiServices.getPaymentGateway(from, 'withdrawal', session.data.walletId);
                     if (!paymentGateways || paymentGateways.length === 0) {
                         await twilioMessageServices.goBackTempMessage(from, `❌ No payment gateways are available at the moment. Please try again later.`);
                         session.step = 'main-menu';

@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:../db_data/data.db"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 // ==================== APP SETTING DB =========================================
@@ -83,7 +83,7 @@ model UserSession {
     id            String   @id @unique @default(uuid())
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
-    whatsappPhone String
+    whatsappPhone String?
     step          String?
     userFlow      String?
     language      String?

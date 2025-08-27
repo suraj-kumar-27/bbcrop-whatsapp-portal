@@ -2,13 +2,15 @@ import e from "cors";
 import crmApiServices from "./crmApi";
 import twilioMessageServices from "./twilioMessage";
 import userServices from "./user";
+import whatsappUserServices from './whatsappUser'
+
 
 
 const whatsAppFlow = {
 
     async isLoggedIn(phone) {
         try {
-            const user = await userServices.find({ whatsappPhone: phone });
+            const user = await whatsappUserServices.find({ whatsappPhone: phone });
             if (!user) {
                 return await twilioMessageServices.sendTextMessage(phone, 'You are not registered. Please sign up first.');
             }

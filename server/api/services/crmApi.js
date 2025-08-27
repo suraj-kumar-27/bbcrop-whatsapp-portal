@@ -3,6 +3,7 @@ import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
 import crmApiLogsServices from './crmApiLogs';
+import whatsappUserServices from './whatsappUser'
 
 // const baseUrl = 'https://cfcrm-api.onrender.com';
 const baseUrl = 'https://crm-api.bbcorp.trade';
@@ -10,7 +11,7 @@ const baseUrl = 'https://crm-api.bbcorp.trade';
 // Helper function to log API calls
 async function logApiCall(whatsappPhone, method, url, requestData, responseData, status, statusCode, errorMessage = null, apiType = 'general', responseTime = null) {
     try {
-        const user = whatsappPhone ? await userServices.find({ whatsappPhone }) : null;
+        const user = whatsappPhone ? await whatsappUserServices.find({ whatsappPhone }) : null;
         await crmApiLogsServices.create({
             whatsappPhone,
             name: user?.name || null,
@@ -61,9 +62,9 @@ const crmApiServices = {
             // Log successful API call
             await logApiCall(whatsappPhone, 'POST', url, requestData, res.data, 'success', res.status, null, 'signup', responseTime);
 
-            const checkUser = await userServices.find({ whatsappPhone: whatsappPhone });
+            const checkUser = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
             if (checkUser) {
-                await userServices.update(
+                await whatsappUserServices.update(
                     { id: checkUser.id },
                     {
                         whatsappPhone: whatsappPhone,
@@ -76,7 +77,7 @@ const crmApiServices = {
                     }
                 );
             } else {
-                await userServices.create({
+                await whatsappUserServices.create({
                     whatsappPhone: whatsappPhone,
                     phone: phoneNumber,
                     firstName: name.split(' ')[0],
@@ -124,7 +125,7 @@ const crmApiServices = {
 
             // console.log('Login response:', JSON.stringify(res.data, null, 2));
             if (res.data.token) {
-                const checkUser = await userServices.find({ whatsappPhone: whatsappPhone });
+                const checkUser = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
 
                 let userObj = {
                     whatsappPhone,
@@ -139,9 +140,9 @@ const crmApiServices = {
                 }
 
                 if (!checkUser) {
-                    await userServices.create(userObj);
+                    await whatsappUserServices.create(userObj);
                 } else {
-                    await userServices.update(
+                    await whatsappUserServices.update(
                         { id: checkUser.id },
                         userObj
                     );
@@ -614,8 +615,8 @@ const crmApiServices = {
             throw new Error(e.response?.data?.message || 'Error in get wallet.');
         }
     },
-    async getPaymentGateway(whatsappPhone) {
-        const url = `${baseUrl}/api/client/payment_gateway?type=deposit`;
+    async getPaymentGateway(whatsappPhone, type, walletId) {
+        const url = `${baseUrl}/api/client/payment_gateway?type=${type}&walletId=${walletId}`;
         const startTime = Date.now();
 
         try {
@@ -637,7 +638,7 @@ const crmApiServices = {
             // Log failed API call
             await logApiCall(whatsappPhone, 'GET', url, { type: 'deposit' }, e?.response?.data || null, 'error', e?.response?.status || 500, e?.response?.data?.message || e.message, 'payment_gateway');
 
-            throw new Error(e.response?.data?.message || 'Error in get wallet.');
+            throw new Error(e.response?.data?.message || 'Error in get deposit payment gateway.');
         }
     },
 
@@ -762,11 +763,11 @@ export default crmApiServices;
 
 async function getToken(whatsappPhone) {
     try {
-        const user = await userServices.find({ whatsappPhone: whatsappPhone });
+        const user = await whatsappUserServices.find({ whatsappPhone: whatsappPhone });
         if (user) {
             const loginResponse = await crmApiServices.login(whatsappPhone, user.email, user.password);
             if (loginResponse.token) {
-                await userServices.update(
+                await whatsappUserServices.update(
                     { id: user.id },
                     { token: loginResponse.token }
                 );
