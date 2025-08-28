@@ -50,12 +50,12 @@ export class crmApiLogsController {
      *         description: statusCode
      *         in: query
      *         required: false
-     *       - name: startDate
-     *         description: startDate
+     *       - name: fromDate
+     *         description: fromDate
      *         in: query
      *         required: false
-     *       - name: endDate
-     *         description: endDate
+     *       - name: toDate
+     *         description: toDate
      *         in: query
      *         required: false
      *       - name: page
@@ -86,8 +86,8 @@ export class crmApiLogsController {
             type: Joi.string().valid('deposit', 'withdrawal', 'transfer', 'transaction', 'createAccount').optional().allow(''),
             status: Joi.string().optional().allow(''),
             statusCode: Joi.string().optional().allow(''),
-            startDate: Joi.string().optional().allow(''),
-            endDate: Joi.string().optional().allow(''),
+            fromDate: Joi.string().optional().allow(''),
+            toDate: Joi.string().optional().allow(''),
             page: Joi.string().optional().allow(''),
             limit: Joi.string().optional().allow(''),
         });
